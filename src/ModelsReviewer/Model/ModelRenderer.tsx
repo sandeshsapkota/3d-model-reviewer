@@ -1,17 +1,22 @@
 import * as THREE from "three";
 import {useLoader} from "@react-three/fiber";
-import {Object3D, Object3DEventMap, TextureLoader} from "three";
+import {Object3D, Object3DEventMap, TextureLoader, Vector3} from "three";
+// @ts-ignore
 import {OBJLoader} from "three/examples/jsm/loaders/OBJLoader";
 import {OrbitControls} from "@react-three/drei";
 import {useCommentContext} from "../context/CommentContext.tsx";
-import { FaCommentAlt } from "react-icons/fa";
-import { Html } from "@react-three/drei";
+import {useThree} from "@react-three/fiber";
+import {useEffect, useRef} from "react";
+import {Comment} from "@/@types"
 
 function ModelRenderer({url, textureUrl}: {
     url: string,
-    textureUrl: string,
+    textureUrl: string | string[],
 }) {
-    const {setActiveVertices, isCommentActive, savedComments, activeVertices} = useCommentContext()
+    const {camera} = useThree()
+    const controlsRef = useRef(null)
+
+    const {setActiveVertices, isCommentActive, savedComments, utilsRef} = useCommentContext()
 
     const texture = useLoader(TextureLoader, textureUrl);
     const obj = useLoader(OBJLoader, url);
@@ -36,34 +41,53 @@ function ModelRenderer({url, textureUrl}: {
             const intersects = raycaster.intersectObjects(obj.children);
             setActiveVertices(intersects[0].point)
         }
-
-
     };
 
+    const handleRotateCamera = ({x, y, z}: { x: number, y: number, z: number }) => {
+        const targetPosition = new Vector3(x, y, z)
+        camera.position.set(targetPosition.x + 5, targetPosition.y + 5, targetPosition.z + 5)
 
-    return <group>
-        <OrbitControls zoomSpeed={.5}/>
-        {
-            savedComments.map((comment) => {
-                const {x, y, z} = comment;
-                const scaledPosition = new THREE.Vector3(
-                    comment.vertices.x * 0.1,
-                    comment.vertices.y * 0.1,
-                    comment.vertices.z * 0.1
-                );
-                return (
-                    <mesh
-                        key={comment.id}
-                        position={scaledPosition}
-                    >
-                        <planeGeometry args={[0.5, 0.5]} />
-                        <meshBasicMaterial color="blue" side={THREE.DoubleSide} />
-                    </mesh>
-                )
-            })
+        if (controlsRef.current) {
+            controlsRef.current.target.copy(targetPosition)
+            controlsRef.current.update()
         }
-        <primitive object={obj} scale={[0.1, 0.1, 0.1]} onClick={handleClick}/>
-    </group>;
+    }
+
+    useEffect(() => {
+        if (utilsRef?.current) {
+            utilsRef.current.handleRotateCamera = handleRotateCamera
+        }
+    }, [])
+
+
+    return (
+        <group>
+            <OrbitControls zoomSpeed={.5} ref={controlsRef}/>
+            {
+                savedComments.map((comment: Comment) => {
+                    return (
+                        <mesh
+                            key={comment.id}
+                            position={[
+                                comment.vertices.x as number,
+                                comment.vertices.y as number,
+                                comment.vertices.z as number + 0.01
+                            ]}
+                        >
+                            <circleGeometry args={[40 / 1000, 32]}/>
+                            <meshBasicMaterial
+                                color={comment?.isActive ? "blue" : "orangered"}
+                                depthTest={false}
+                                transparent={true}
+                                opacity={1}
+                            />
+                        </mesh>
+                    );
+                })
+            }
+            <primitive object={obj} scale={[0.1, 0.1, 0.1]} onClick={handleClick}/>
+        </group>
+    );
 }
 
 export default ModelRenderer;

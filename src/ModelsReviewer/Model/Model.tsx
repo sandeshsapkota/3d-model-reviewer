@@ -2,8 +2,8 @@ import {Canvas} from '@react-three/fiber';
 import {DirectionalLightHelper} from "three";
 import {useHelper} from "@react-three/drei";
 import {useRef} from "react";
-import ModelRenderer from "./ModelRenderer.tsx";
-import {CommentProvider} from "../context/CommentContext.tsx";
+import ModelRenderer from "@/ModelsReviewer/Model/ModelRenderer.tsx";
+import {CommentProvider} from "@/ModelsReviewer/context/CommentContext.tsx";
 
 function DirectionalLight() {
     const lightRef = useRef<any>(null);
@@ -11,17 +11,19 @@ function DirectionalLight() {
     return <directionalLight ref={lightRef} position={[5, 10, 1]} intensity={2}/>;
 }
 
-const Model = ({url, textureUrl}: { url: string; textureUrl: string }) => {
+const Model = ({url, textureUrl}: { url: string; textureUrl: string | string[]}) => {
     return (
-        <CommentProvider>
-            <Canvas style={{backgroundColor: "#666"}}>
-                <DirectionalLight/>
-                <ModelRenderer
-                    url={url}
-                    textureUrl={textureUrl}
-                />
-            </Canvas>
-        </CommentProvider>
+        <div>
+            <CommentProvider>
+                <Canvas style={{backgroundColor: "#666"}}>
+                    <DirectionalLight/>
+                    <ModelRenderer
+                        url={url}
+                        textureUrl={textureUrl}
+                    />
+                </Canvas>
+            </CommentProvider>
+        </div>
     )
 }
 

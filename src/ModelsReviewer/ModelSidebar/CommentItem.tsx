@@ -1,33 +1,23 @@
-export interface Comment {
-    comment: string
-    id: number
-    vertices: Vertex
-}
-
-export interface Vertex {
-    x: number
-    y: number
-    z: number
-}
-
-function CoordinateTag({label, value}: { label: string; value: string }) {
-    return (
-        <div className="inline-flex items-center bg-gray-100 px-2 py-1 rounded text-xs">
-            <span className="font-medium text-gray-600 mr-1">{label}:</span>
-            <span className="text-gray-800">{value}</span>
-        </div>
-    )
-}
+import {useCommentContext} from "@/ModelsReviewer/context/CommentContext.tsx";
+import cx from "classnames";
+import {Comment} from "@/@types";
 
 function CommentItem({comment}: { comment: Comment }) {
+    const {handleToggleActive} = useCommentContext()
     return (
-        <li className="bg-gray-50 rounded-lg p-4 shadow-sm">
-            <p className="text-gray-800 mb-2">{comment.comment}</p>
-            <div className="flex flex-wrap gap-2">
-                <CoordinateTag label="X" value={comment.vertices.x.toFixed(3)}/>
-                <CoordinateTag label="Y" value={comment.vertices.y.toFixed(3)}/>
-                <CoordinateTag label="Z" value={comment.vertices.z.toFixed(3)}/>
+        <li onClick={() => {
+            handleToggleActive(comment.id)
+        }}
+            className={cx("p-3 bg-white shadow-sm rounded-md grid gap-2 cursor-pointer border border-transparent transition duration-200", {
+                "!border-blue-500": comment.isActive
+            })}>
+            <div className="flex items-center gap-1">
+                <div
+                    className="bg-gray-100 w-8 h-8 text-sm flex items-center justify-center rounded-full font-semibold">JD
+                </div>
+                <p className={"font-bold text-xs"}>John Doe</p>
             </div>
+            <p className="text-sm text-gray-700">{comment.comment}</p>
         </li>
     )
 }

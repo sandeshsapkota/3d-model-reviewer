@@ -1,4 +1,5 @@
-import Model from "./Model/Model.tsx";
+import Model from "@/ModelsReviewer/Model/Model.tsx";
+import {FullScreenProvider} from "@/ModelsReviewer/context/FullScreenContext";
 
 /*
 * FIND ONE ACTIVE MODELS FROM THE ARRAY AND RENDER ONE
@@ -6,7 +7,9 @@ import Model from "./Model/Model.tsx";
 const ModelsReviewer = () => {
     return (
         <div>
-            <Model textureUrl={"/cottage_diffuse.png"} url={"/cottage_obj.obj"}/>
+            <FullScreenProvider>
+                <Model textureUrl={"models/cottage/cottage_diffuse.png"} url={"models/cottage/cottage_obj.obj"}/>
+            </FullScreenProvider>
         </div>
     );
 };

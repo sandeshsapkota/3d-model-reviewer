@@ -1,8 +1,9 @@
 import {useState} from "react"
 import CommentItem from "./CommentItem.tsx";
-import {Comment} from "./CommentItem.tsx";
+import {Comment} from "@/@types";
 import {useCommentContext} from "../context/CommentContext.tsx";
-
+import {isNumber} from "lodash"
+import SidebarExpander from "./SidebarExpander.tsx";
 
 const CommentSidebar = () => {
     const [comment, setComment] = useState("")
@@ -22,41 +23,18 @@ const CommentSidebar = () => {
         }
     }
 
+    const hasActiveVertices = isNumber( activeVertices?.x)
+
+
     return (
-        <div className="flex-1 flex flex-col h-full border-l border-gray-200 bg-white">
+        <div className="flex-1 flex flex-col h-full border-l border-gray-200 bg-white relative">
             <div className="p-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold">Comments</h2>
-                    <button
-                        className={`flex items-center justify-center p-2 rounded-full transition-colors ${
-                            isCommentActive ? "bg-blue-100 text-blue-600" : "bg-gray-100 hover:bg-gray-200"
-                        }`}
-                        onClick={handleToggleCommentMode}
-                        aria-label="Toggle comment mode"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                    </button>
                 </div>
-                {isCommentActive && (
-                    <div className="mt-2 py-1 px-3 bg-blue-50 text-blue-700 text-sm rounded-md">
-                        Comment mode active - Click on the model to place a comment
-                    </div>
-                )}
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
                 {savedComments?.length > 0 ? (
                     <ul className="space-y-4">
                         {savedComments.map((comment: Comment) => (
@@ -90,7 +68,7 @@ const CommentSidebar = () => {
                 )}
             </div>
 
-            {isCommentActive && activeVertices && (
+            {isCommentActive && hasActiveVertices && (
                 <div className="p-4 border-t border-gray-200">
                     <div className="flex">
                         <input
@@ -115,6 +93,8 @@ const CommentSidebar = () => {
                     </div>
                 </div>
             )}
+
+           <SidebarExpander/>
         </div>
     )
 }
