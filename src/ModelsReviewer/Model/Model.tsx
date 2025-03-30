@@ -4,22 +4,29 @@ import {useHelper} from "@react-three/drei";
 import {useRef} from "react";
 import ModelRenderer from "@/ModelsReviewer/Model/ModelRenderer.tsx";
 import {CommentProvider} from "@/ModelsReviewer/context/CommentContext.tsx";
+import {useNavigationContext} from "@/ModelsReviewer/context/NavigationProvider.tsx";
 
 function DirectionalLight() {
     const lightRef = useRef<any>(null);
     useHelper(lightRef, DirectionalLightHelper, 0.5, "red");
-    return <directionalLight ref={lightRef} position={[5, 10, 1]} intensity={2}/>;
+    return (
+        <group>
+            <directionalLight ref={lightRef} position={[-12, 22, 2]} intensity={2}/>
+            <ambientLight intensity={0.5} />
+        </group>
+    )
 }
 
-const Model = ({url, textureUrl}: { url: string; textureUrl: string | string[]}) => {
+const Model = () => {
+    const {activeModel} = useNavigationContext()
+
     return (
         <div>
             <CommentProvider>
                 <Canvas style={{backgroundColor: "#666"}}>
                     <DirectionalLight/>
                     <ModelRenderer
-                        url={url}
-                        textureUrl={textureUrl}
+                        url={activeModel}
                     />
                 </Canvas>
             </CommentProvider>
