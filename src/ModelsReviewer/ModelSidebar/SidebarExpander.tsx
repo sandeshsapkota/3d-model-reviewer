@@ -1,5 +1,5 @@
 import {FaCaretRight, FaCaretLeft} from "react-icons/fa";
-import {useFullScreen} from '@/ModelsReviewer/context/FullScreenContext.tsx';
+import {useFullScreen} from '@/ModelsReviewer/context/FullScreen/useFullScreen.tsx';
 
 const SidebarExpander = () => {
     const {isFullScreen, toggleFullScreen} = useFullScreen()

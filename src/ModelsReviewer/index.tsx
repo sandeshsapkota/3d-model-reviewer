@@ -1,5 +1,6 @@
 import Model from "@/ModelsReviewer/Model/Model.tsx";
-import {FullScreenProvider} from "@/ModelsReviewer/context/FullScreenContext";
+import {FullScreenProvider} from "@/ModelsReviewer/context/FullScreen/FullScreenContext.tsx";
+import {NavigationProvider} from "@/ModelsReviewer/context/NavigationProvider.tsx";
 
 /*
 * FIND ONE ACTIVE MODELS FROM THE ARRAY AND RENDER ONE
@@ -7,9 +8,12 @@ import {FullScreenProvider} from "@/ModelsReviewer/context/FullScreenContext";
 const ModelsReviewer = () => {
     return (
         <div>
-            <FullScreenProvider>
-                <Model textureUrl={"models/cottage/cottage_diffuse.png"} url={"models/cottage/cottage_obj.obj"}/>
-            </FullScreenProvider>
+            <NavigationProvider>
+                <FullScreenProvider>
+                    <Model/>
+                </FullScreenProvider>
+            </NavigationProvider>
+
         </div>
     );
 };

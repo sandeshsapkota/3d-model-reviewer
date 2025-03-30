@@ -1,19 +1,15 @@
-import {createContext, ReactNode, useContext, useRef, useState} from "react";
+import {ReactNode, useRef, useState} from "react";
 import styles from "@/test.module.scss";
 import CommentSidebar from "@/ModelsReviewer/ModelSidebar/ModelSidebar.tsx";
 
-const CommentContext = createContext<any>(null);
 
 import {Comment, Vertex} from "@/@types";
 
-import {FaCaretLeft, FaCaretRight} from "react-icons/fa";
 import cx from "classnames";
-import {useFullScreen} from "@/ModelsReviewer/context/FullScreenContext.tsx";
+import {useFullScreen} from "@/ModelsReviewer/context/FullScreen/FullScreenContext.tsx";
 import CommentButton from "@/ModelsReviewer/ModelSidebar/CommentButton.tsx";
-
-interface UtilsRefType {
-    handleRotateCamera?: (vertices: Vertex) => void;
-}
+import NextPrev from "@/ModelsReviewer/context/NextPrev.tsx";
+import {CommentContext, UtilsRefType} from "@/ModelsReviewer/context/useCommentContext.tsx";
 
 export const CommentProvider = ({children}: { children: ReactNode }) => {
     const utilsRef = useRef<UtilsRefType>({});
@@ -21,11 +17,10 @@ export const CommentProvider = ({children}: { children: ReactNode }) => {
     const [isCommentActive, setIsCommentActive] = useState(false);
     const [savedComments, setSavedComments] = useState<Comment[]>([]);
     const [activeVertices, setActiveVertices] = useState<Vertex>({x: null, y: null, z: null});
-    const {isFullScreen, toggleFullScreen} = useFullScreen()
+    const {isFullScreen} = useFullScreen()
 
     const handleToggleCommentMode = () => {
         setIsCommentActive(!isCommentActive);
-        toggleFullScreen()
     };
 
     const handleSaveComment = (comment: string) => {
@@ -76,17 +71,7 @@ export const CommentProvider = ({children}: { children: ReactNode }) => {
 
                 <div className={styles.modelArea}>
                     <CommentButton/>
-                    <div className="absolute top-4 right-4 flex gap-1.5 z-10">
-                        <button
-                            className="w-8 h-8 flex items-center justify-center bg-white border-none rounded  hover:bg-gray-100 cursor-pointer transition-colors">
-                            <FaCaretLeft size={16}/>
-                        </button>
-                        <button
-                            className="w-8 h-8 flex items-center justify-center bg-white border-none rounded  hover:bg-gray-100 cursor-pointer transition-colors">
-                            <FaCaretRight size={16}/>
-                        </button>
-
-                    </div>
+                    <NextPrev/>
                     {children}
 
                 </div>
@@ -96,10 +81,4 @@ export const CommentProvider = ({children}: { children: ReactNode }) => {
     );
 };
 
-export const useCommentContext = () => {
-    const context = useContext(CommentContext);
-    if (!context) {
-        throw new Error("useCommentContext must be used within a CommentProvider");
-    }
-    return context;
-};
+

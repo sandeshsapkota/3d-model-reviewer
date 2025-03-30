@@ -1,4 +1,4 @@
-import {useCommentContext} from "@/ModelsReviewer/context/CommentContext.tsx";
+import useCommentContext from "@/ModelsReviewer/context/useCommentContext.tsx";
 import cx from "classnames";
 import {Comment} from "@/@types";
 

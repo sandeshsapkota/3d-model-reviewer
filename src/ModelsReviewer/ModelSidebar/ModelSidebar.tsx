@@ -1,9 +1,9 @@
 import {useState} from "react"
 import CommentItem from "./CommentItem.tsx";
 import {Comment} from "@/@types";
-import {useCommentContext} from "../context/CommentContext.tsx";
 import {isNumber} from "lodash"
 import SidebarExpander from "./SidebarExpander.tsx";
+import useCommentContext from "@/ModelsReviewer/context/useCommentContext.tsx";
 
 const CommentSidebar = () => {
     const [comment, setComment] = useState("")

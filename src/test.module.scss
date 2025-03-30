@@ -3,6 +3,7 @@
   grid-template-columns:  80% 1fr;
   height: 100vh;
   transition: .3s;
+  overflow: hidden;
 
   &__expaned{
     grid-template-columns:  100% 0;
