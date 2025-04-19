@@ -1,5 +1,5 @@
-import LinkedList from "@/utils/linkedList.ts";
-import {createContext, useContext, useState, ReactNode} from "react";
+import CircularLinkedList from "@/utils/linkedList.ts";
+import {createContext, useContext, useState, ReactNode, useMemo} from "react";
 
 type NavigationType = {
     activeModel: string | null;
@@ -14,23 +14,24 @@ const NavigationContext = createContext<NavigationType>({
 });
 
 const models = [
+    "models/model-3/sample.glb",
     "models/model-1/sample.glb",
     "models/model-2/sample.glb",
-    "models/model-3/sample.glb",
 ];
 
 export const NavigationProvider = ({children}: { children: ReactNode }) => {
-    const linkedList = new LinkedList(models);
-    const [activeModel, setActiveModel] = useState(linkedList.getCurrent());
+    // Create LinkedList instance only once
+    const linkedList = useMemo(() => new CircularLinkedList(models), []);
+    const [activeModel, setActiveModel] = useState<string | null>(linkedList.getCurrent());
 
     const nextModel = () => {
-        linkedList.next();
-        setActiveModel(linkedList.getCurrent());
+        const next = linkedList.next();
+        if (next) setActiveModel(next);
     };
 
     const prevModel = () => {
-        linkedList.prev();
-        setActiveModel(linkedList.getCurrent());
+        const prev = linkedList.prev();
+        if (prev) setActiveModel(prev);
     };
 
     return (
@@ -47,4 +48,3 @@ export const useNavigationContext = () => {
     }
     return context;
 };
-

@@ -21,7 +21,6 @@ function DirectionalLight() {
 
 const Model = () => {
     const {activeModel} = useNavigationContext()
-
     return (
         <div>
             <CommentProvider>
@@ -29,6 +28,7 @@ const Model = () => {
                     <DirectionalLight/>
                     {activeModel && (
                         <ModelRenderer
+                            key={activeModel}
                             url={activeModel}
                         />
                     )}
