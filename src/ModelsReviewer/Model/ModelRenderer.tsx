@@ -16,7 +16,7 @@ function ModelRenderer({url}: {
 
     const {setActiveVertices, isCommentActive, savedComments, utilsRef } = useCommentContext()
 
-    const { scene } = useGLTF(url)
+    const { scene } = useGLTF(url);
 
     useEffect(() => {
         // Calculate bounding box
@@ -78,7 +78,6 @@ function ModelRenderer({url}: {
             utilsRef.current.handleRotateCamera = handleRotateCamera
         }
     }, [utilsRef, handleRotateCamera])
-
 
     return (
         <group>
