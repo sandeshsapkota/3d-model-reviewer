@@ -7,21 +7,6 @@ import ModelRenderer from "@/ModelsReviewer/Model/ModelRenderer.tsx";
 import {CommentProvider} from "@/ModelsReviewer/context/CommentContext.tsx";
 import {useNavigationContext} from "@/ModelsReviewer/context/NavigationProvider.tsx";
 
-function DirectionalLight({ showHelper = true }) {
-    const lightRef = useRef<THREE.DirectionalLight>(null!);
-    
-    // Only use helper when showHelper is true
-    if (showHelper) {
-        useHelper(lightRef, DirectionalLightHelper, 0.5, "red");
-    }
-    
-    return (
-        <group>
-            <directionalLight ref={lightRef} position={[-12, 22, 2]} intensity={2}/>
-            <ambientLight intensity={0.5} />
-        </group>
-    )
-}
 
 function DirectionalLightWithHelper() {
     const lightRef = useRef<THREE.DirectionalLight>(null!);
