@@ -12,6 +12,7 @@ interface CommentContextType {
     handleToggleCommentMode: () => void;
     handleSaveComment: (comment: string) => void;
     setComment: (comment: string) => void;
+    handleDeleteComment: (id: number) => void;
     handleToggleActive: (id: number) => void
     utilsRef: RefObject<UtilsRefType>
     setSavedComments: (comments: Comment[]) => void

@@ -123,6 +123,10 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const handleDeleteComment = (id: number) => {
+        setSavedComments(prev => prev.filter(comment => comment.id !== id));
+    };
+
     const handleDismissToast = () => {
         setShowToast(false);
         setToastDismissed(true);
@@ -146,6 +150,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
                     setActiveVertices(vertices);
                 },
                 handleSaveComment,
+                handleDeleteComment,
                 handleToggleCommentMode,
                 handleToggleActive,
                 utilsRef,
@@ -194,7 +199,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
                             {/* Close */}
                             <button
                                 onClick={handleDismissToast}
-                                className="shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-indigo-200 hover:text-white hover:bg-white/20 transition-all duration-150"
+                                className="shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center cursor-pointer justify-center text-indigo-200 hover:text-white hover:bg-white/20 transition-all duration-150"
                                 aria-label="Dismiss hint"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
