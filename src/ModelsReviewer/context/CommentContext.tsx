@@ -9,6 +9,17 @@ import NextPrev from "@/ModelsReviewer/context/NextPrev.tsx";
 import { CommentContext, UtilsRefType } from "@/ModelsReviewer/context/useCommentContext.tsx";
 import { useNavigationContext } from "@/ModelsReviewer/context/NavigationProvider.tsx";
 
+// Mock comments to populate if no data exists
+const MOCK_COMMENTS: Record<string, Comment[]> = {
+    "models/model-3/sample.glb": [
+        { id: 1, comment: "Check the texture on this side.", vertices: { x: 0.5, y: -0.5, z: 2 }, isActive: false },
+        { id: 2, comment: "Material looks a bit too glossy here.", vertices: { x: -1.5, y: 1.2, z: -0.5 }, isActive: false },
+        { id: 3, comment: "Need to adjust the scale of this element.", vertices: { x: 0.2, y: 2.5, z: 0.8 }, isActive: false }
+    ]
+};
+
+const STORAGE_KEY = 'model_reviewer_comments';
+
 export const CommentProvider = ({ children }: { children: ReactNode }) => {
     const utilsRef = useRef<UtilsRefType>({});
     const [comment, setComment] = useState<string>("");
@@ -19,8 +30,21 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
     const { activeModel } = useNavigationContext();
 
     // Per-model comment store: { [modelUrl]: Comment[] }
-    // Using a ref so saves don't cause re-renders
-    const perModelComments = useRef<Record<string, Comment[]>>({});
+    // Initialized from localStorage or defaults
+    const perModelComments = useRef<Record<string, Comment[]>>((() => {
+        if (typeof window === 'undefined') return {};
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try {
+                return JSON.parse(stored);
+            } catch (e) {
+                console.error("Failed to parse stored comments", e);
+                return MOCK_COMMENTS;
+            }
+        }
+        return MOCK_COMMENTS;
+    })());
+
     // Track the previous model so we can persist its comments before switching
     const prevModelRef = useRef<string | null>(null);
 
@@ -34,6 +58,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
         // 1. Persist comments for the model we're leaving
         if (prevModelRef.current) {
             perModelComments.current[prevModelRef.current] = savedComments;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(perModelComments.current));
         }
         prevModelRef.current = activeModel;
 
@@ -57,8 +82,16 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
         return () => {
             if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeModel]);
+
+    // Persist to localStorage whenever savedComments changes
+    useEffect(() => {
+        if (activeModel) {
+            perModelComments.current[activeModel] = savedComments;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(perModelComments.current));
+        }
+    }, [savedComments, activeModel]);
 
     const handleToggleCommentMode = () => {
         setIsCommentActive(!isCommentActive);
@@ -105,7 +138,13 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
                 isCommentActive,
                 setIsCommentActive,
                 activeVertices,
-                setActiveVertices,
+                setActiveVertices: (vertices: Vertex) => {
+                    if (vertices.x !== null) {
+                        // If starting a new comment, close all existing comment popovers
+                        setSavedComments(prev => prev.map(c => ({ ...c, isActive: false })));
+                    }
+                    setActiveVertices(vertices);
+                },
                 handleSaveComment,
                 handleToggleCommentMode,
                 handleToggleActive,
