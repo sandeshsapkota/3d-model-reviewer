@@ -14,7 +14,7 @@ function ModelRenderer({url}: {
     const perspCamera = camera as THREE.PerspectiveCamera;
     const controlsRef = useRef<OrbitControlsType>(null)
 
-    const {setActiveVertices, isCommentActive, savedComments, utilsRef } = useCommentContext()
+    const {setActiveVertices, isCommentActive, savedComments, utilsRef, activeVertices, comment, setComment, handleSaveComment, handleToggleActive } = useCommentContext()
 
     const { scene } = useGLTF(url);
 
@@ -49,14 +49,15 @@ function ModelRenderer({url}: {
 
     const handleClick = (event: ThreeEvent<MouseEvent>) => {
         if (isCommentActive) {
-            const raycaster = new THREE.Raycaster();
-            const mouse = new THREE.Vector2();
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            raycaster.setFromCamera(mouse, perspCamera);
-            const intersects = raycaster.intersectObjects(scene.children);
-            if (intersects.length > 0) {
-                setActiveVertices(intersects[0].point)
+            // Prevent placing a new marker if clicking on an HTML element
+            if ((event as any).target && ((event as any).target as HTMLElement).closest && ((event as any).target as HTMLElement).closest('.comment-popover')) {
+                return;
+            }
+            
+            // R3F handles raycasting natively. We can just use the exact intersection point!
+            event.stopPropagation();
+            if (event.point) {
+                setActiveVertices(event.point);
             }
         }
     };
@@ -87,26 +88,89 @@ function ModelRenderer({url}: {
                 ref={controlsRef}
             />
             {
-                savedComments.map((comment: Comment) => {
+                savedComments.map((savedComment: Comment) => {
                     return (
                         <group
-                            key={comment.id}
+                            key={savedComment.id}
                             position={[
-                                comment.vertices.x as number,
-                                comment.vertices.y as number,
-                                comment.vertices.z as number + 0.01
+                                savedComment.vertices.x as number,
+                                savedComment.vertices.y as number,
+                                savedComment.vertices.z as number + 0.01
                             ]}
                         >
                             <Html center zIndexRange={[100, 0]}>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${comment?.isActive ? 'bg-indigo-600 scale-125 ring-4 ring-indigo-500/30' : 'bg-white/90 backdrop-blur-md border-2 border-indigo-500 hover:scale-110 group cursor-pointer'}`}
-                                     style={{ pointerEvents: 'none' }}>
-                                    <div className={`w-2.5 h-2.5 rounded-full ${comment?.isActive ? 'bg-white' : 'bg-indigo-500 group-hover:bg-indigo-600 transition-colors'}`} />
+                                <div className="comment-popover relative group">
+                                    <div 
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl cursor-pointer pointer-events-auto ${savedComment?.isActive ? 'bg-indigo-600 scale-125 ring-4 ring-indigo-500/30' : 'bg-white/90 backdrop-blur-md border-2 border-indigo-500 hover:scale-110'}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleToggleActive(savedComment.id);
+                                        }}
+                                    >
+                                        <div className={`w-2.5 h-2.5 rounded-full ${savedComment?.isActive ? 'bg-white' : 'bg-indigo-500 group-hover:bg-indigo-600 transition-colors'}`} />
+                                    </div>
+                                    
+                                    {/* Expanded popover for viewing the comment */}
+                                    {savedComment?.isActive && (
+                                        <div className="absolute top-1/2 left-full ml-4 -translate-y-1/2 w-64 p-4 bg-white/95 backdrop-blur-xl border border-zinc-200/80 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] pointer-events-auto z-50 animate-in fade-in zoom-in-95 duration-200">
+                                            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-zinc-100">
+                                                <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">JD</div>
+                                                <span className="text-zinc-900 font-semibold text-sm">John Doe</span>
+                                            </div>
+                                            <p className="text-zinc-700 text-sm leading-relaxed">{savedComment.comment}</p>
+                                        </div>
+                                    )}
                                 </div>
                             </Html>
                         </group>
                     );
                 })
             }
+            {/* Draft Marker Popover */}
+            {isCommentActive && activeVertices?.x !== null && (
+                <group
+                    position={[
+                        activeVertices.x as number,
+                        activeVertices.y as number,
+                        activeVertices.z as number + 0.01
+                    ]}
+                >
+                    <Html center zIndexRange={[100, 0]}>
+                        <div className="comment-popover relative">
+                            {/* Marker dot */}
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-600 scale-125 ring-4 ring-indigo-500/30 shadow-xl pointer-events-auto">
+                                <div className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
+                            </div>
+                            
+                            {/* Input Popover */}
+                            <div className="absolute top-1/2 left-full ml-4 -translate-y-1/2 w-72 p-1.5 bg-white/95 backdrop-blur-xl border border-zinc-200/80 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] pointer-events-auto z-50 animate-in zoom-in-95 duration-200">
+                                <div className="relative flex">
+                                    <input
+                                        autoFocus
+                                        type="text"
+                                        placeholder="Add a comment..."
+                                        value={comment}
+                                        onChange={(e) => setComment(e.target.value)}
+                                        className="w-full px-4 py-3 bg-transparent border-none focus:outline-none focus:ring-0 text-zinc-800 placeholder:text-zinc-400 text-sm font-medium"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" && comment.trim()) {
+                                                handleSaveComment(comment);
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        onClick={() => handleSaveComment(comment)}
+                                        disabled={!comment.trim()}
+                                        className="m-1 px-4 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                                    >
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </Html>
+                </group>
+            )}
             <primitive 
                 object={scene} 
                 scale={[1, 1, 1]} 

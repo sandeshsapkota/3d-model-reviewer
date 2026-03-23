@@ -33,18 +33,14 @@ function DirectionalLightWithoutHelper() {
 function LoadingFallback() {
     const { progress } = useProgress();
     return (
-        <Html center>
-            <div className="flex flex-col items-center justify-center p-8 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-300 w-72">
-                <div className="relative w-16 h-16 mb-6">
-                    <div className="absolute inset-0 border-4 border-white/10 rounded-full"></div>
-                    <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
-                </div>
+        <Html center zIndexRange={[100, 0]}>
+            <div className="flex flex-col items-center justify-center p-8 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-300 w-72 pointer-events-none">
                 <div className="text-lg font-bold text-white tracking-widest mb-3 drop-shadow-md">
                     LOADING MODEL
                 </div>
                 <div className="w-full h-1.5 bg-black/30 rounded-full overflow-hidden mb-2">
                     <div 
-                        className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-300 ease-out"
+                        className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 ease-out"
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>

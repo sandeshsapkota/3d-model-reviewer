@@ -1,29 +1,13 @@
-import {useState} from "react"
 import CommentItem from "./CommentItem.tsx";
 import {Comment} from "@/@types";
-import {isNumber} from "lodash"
-import SidebarExpander from "./SidebarExpander.tsx";
 import useCommentContext from "@/ModelsReviewer/context/useCommentContext.tsx";
 
 const CommentSidebar = () => {
-    const [comment, setComment] = useState("")
     const {
         isCommentActive,
-        activeVertices,
         savedComments,
-        handleSaveComment,
         handleToggleCommentMode
     } = useCommentContext()
-
-
-    const saveComment = () => {
-        if (comment.trim()) {
-            handleSaveComment(comment)
-            setComment("")
-        }
-    }
-
-    const hasActiveVertices = isNumber( activeVertices?.x)
 
 
     return (
@@ -70,34 +54,6 @@ const CommentSidebar = () => {
                     </div>
                 )}
             </div>
-
-            {isCommentActive && hasActiveVertices && (
-                <div className="p-6 border-t border-zinc-100 bg-white/90 glass shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.05)]">
-                    <div className="flex relative">
-                        <input
-                            type="text"
-                            placeholder="Add your comment..."
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            className="flex-1 px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-inner pr-24"
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    saveComment()
-                                }
-                            }}
-                        />
-                        <button
-                            onClick={saveComment}
-                            className="absolute right-1.5 top-1.5 bottom-1.5 px-5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-sm"
-                            disabled={!comment.trim()}
-                        >
-                            Save
-                        </button>
-                    </div>
-                </div>
-            )}
-
-           <SidebarExpander/>
         </div>
     )
 }
