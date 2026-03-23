@@ -64,6 +64,13 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
             }}>
                 {/* Main 3D Area */}
                 <div className="flex-1 relative h-full overflow-hidden z-20 bg-zinc-900 transition-all duration-500">
+                    {/* Floating Instruction Banner */}
+                    {isCommentActive && savedComments.length === 0 && (
+                        <div className="absolute top-8 left-1/2 -translate-x-1/2 px-5 py-3 bg-white/95 backdrop-blur-md text-zinc-700 border border-zinc-200/50 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex items-center gap-3 z-50 animate-in fade-in slide-in-from-top-4 duration-500">
+                            <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></div>
+                            <span className="font-medium tracking-wide text-[14px]">Click anywhere on the 3D model to leave a comment</span>
+                        </div>
+                    )}
                     <CommentButton />
                     <NextPrev />
                     {children}

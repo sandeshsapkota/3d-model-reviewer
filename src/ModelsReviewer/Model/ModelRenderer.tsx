@@ -14,11 +14,14 @@ function ModelRenderer({url}: {
     const perspCamera = camera as THREE.PerspectiveCamera;
     const controlsRef = useRef<OrbitControlsType>(null)
 
-    const {setActiveVertices, isCommentActive, savedComments, utilsRef, activeVertices, comment, setComment, handleSaveComment, handleToggleActive } = useCommentContext()
+    const {setActiveVertices, isCommentActive, savedComments, utilsRef, activeVertices, comment, setComment, handleSaveComment, handleToggleActive, handleToggleCommentMode } = useCommentContext()
 
     const { scene } = useGLTF(url);
 
     useEffect(() => {
+        // Clear draft comments when this component mounts (i.e. model changes)
+        setActiveVertices({x: null, y: null, z: null});
+        
         // Calculate bounding box
         const box = new THREE.Box3().setFromObject(scene);
         const size = box.getSize(new THREE.Vector3());
@@ -63,13 +66,30 @@ function ModelRenderer({url}: {
     };
 
     const handleRotateCamera = (vertices: Vertex) => {
-        if (vertices.x && vertices.y && vertices.z) {
-            const targetPosition = new Vector3(vertices.x, vertices.y, vertices.z)
-            perspCamera.position.set(targetPosition.x + 5, targetPosition.y + 5, targetPosition.z + 5)
+        if (vertices.x !== null && vertices.y !== null && vertices.z !== null) {
+            const targetPosition = new Vector3(vertices.x, vertices.y, vertices.z);
+            
+            // Calculate global bounding box & center
+            const box = new THREE.Box3().setFromObject(scene);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            
+            // Determine optimal camera distance scale
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const fov = perspCamera.fov * (Math.PI / 180);
+            const distanceScale = Math.abs(maxDim / Math.sin(fov / 2) / 1.5);
+
+            // Create a directional vector extending from the center of the object THROUGH the comment point
+            const direction = targetPosition.clone().sub(center).normalize();
+            
+            // Position the camera outside the model along this direction vector
+            const optimalCameraPosition = center.clone().add(direction.multiplyScalar(distanceScale * 0.8));
+            perspCamera.position.copy(optimalCameraPosition);
 
             if (controlsRef.current) {
-                controlsRef.current?.target?.copy?.(targetPosition)
-                controlsRef.current?.update?.()
+                // FORCE the orbit pivot point to always be the absolute center of the object!
+                controlsRef.current.target.copy(center);
+                controlsRef.current.update();
             }
         }
     };
@@ -144,27 +164,23 @@ function ModelRenderer({url}: {
                             
                             {/* Input Popover */}
                             <div className="absolute top-1/2 left-full ml-4 -translate-y-1/2 w-72 p-1 bg-white/95 backdrop-blur-xl border border-zinc-200/80 rounded-lg shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] pointer-events-auto z-50 animate-in zoom-in-95 duration-200">
-                                <div className="relative flex">
-                                    <input
+                                <div className="relative flex flex-col">
+                                    <textarea
                                         autoFocus
-                                        type="text"
                                         placeholder="Add a comment..."
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
-                                        className="w-full px-4 py-3 bg-transparent border-none focus:outline-none focus:ring-0 text-zinc-800 placeholder:text-zinc-400 text-sm font-medium"
+                                        rows={2}
+                                        className="w-full px-4 py-3 bg-transparent border-none focus:outline-none focus:ring-0 text-zinc-800 placeholder:text-zinc-400 text-sm font-medium resize-none min-h-[60px]"
                                         onKeyDown={(e) => {
-                                            if (e.key === "Enter" && comment.trim()) {
-                                                handleSaveComment(comment);
+                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                e.preventDefault();
+                                                if (comment.trim()) {
+                                                    handleSaveComment(comment);
+                                                }
                                             }
                                         }}
                                     />
-                                    <button
-                                        onClick={() => handleSaveComment(comment)}
-                                        disabled={!comment.trim()}
-                                        className="m-1 px-4 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                                    >
-                                        Save
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -175,6 +191,10 @@ function ModelRenderer({url}: {
                 object={scene} 
                 scale={[1, 1, 1]} 
                 onClick={handleClick}
+                onDoubleClick={(e: ThreeEvent<MouseEvent>) => {
+                    e.stopPropagation();
+                    handleToggleCommentMode();
+                }}
             />
         </group>
     );
