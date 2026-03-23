@@ -51,7 +51,7 @@ const CommentSidebar = () => {
                         </p>
                         {!isCommentActive && (
                             <button onClick={handleToggleCommentMode}
-                                className="px-5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-full hover:bg-zinc-800 transition-all shadow-md hover:shadow-lg focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 active:scale-95">
+                                className="px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-full hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:scale-95">
                                 Enable Comment Mode
                             </button>
                         )}

@@ -1,11 +1,11 @@
-import {Canvas} from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import * as THREE from "three";
-import {DirectionalLightHelper} from "three";
-import {useHelper, Html, useProgress} from "@react-three/drei";
-import {useRef, Suspense, useState, useEffect} from "react";
+import { DirectionalLightHelper } from "three";
+import { useHelper, Html, useProgress } from "@react-three/drei";
+import { useRef, Suspense, useState, useEffect } from "react";
 import ModelRenderer from "@/ModelsReviewer/Model/ModelRenderer.tsx";
-import {CommentProvider} from "@/ModelsReviewer/context/CommentContext.tsx";
-import {useNavigationContext} from "@/ModelsReviewer/context/NavigationProvider.tsx";
+import { CommentProvider } from "@/ModelsReviewer/context/CommentContext.tsx";
+import { useNavigationContext } from "@/ModelsReviewer/context/NavigationProvider.tsx";
 
 
 function DirectionalLightWithHelper() {
@@ -13,7 +13,7 @@ function DirectionalLightWithHelper() {
     useHelper(lightRef, DirectionalLightHelper, 0.5, "red");
     return (
         <group>
-            <directionalLight ref={lightRef} position={[-12, 22, 2]} intensity={2}/>
+            <directionalLight ref={lightRef} position={[-12, 22, 2]} intensity={2} />
             <ambientLight intensity={0.5} />
         </group>
     )
@@ -23,7 +23,7 @@ function DirectionalLightWithoutHelper() {
     const lightRef = useRef<THREE.DirectionalLight>(null!);
     return (
         <group>
-            <directionalLight ref={lightRef} position={[-12, 22, 2]} intensity={2}/>
+            <directionalLight ref={lightRef} position={[-12, 22, 2]} intensity={2} />
             <ambientLight intensity={0.5} />
         </group>
     )
@@ -34,17 +34,17 @@ function LoadingFallback() {
     const { progress } = useProgress();
     return (
         <Html center zIndexRange={[100, 0]}>
-            <div className="flex flex-col items-center justify-center p-8 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-300 w-72 pointer-events-none">
-                <div className="text-lg font-bold text-white tracking-widest mb-3 drop-shadow-md">
+            <div className="flex flex-col items-center justify-center p-8 rounded-2xl bg-white/80 backdrop-blur-xl border border-zinc-200/50 shadow-2xl transition-all duration-300 w-72 pointer-events-none">
+                <div className="text-lg font-bold text-zinc-800 tracking-widest mb-3">
                     LOADING MODEL
                 </div>
-                <div className="w-full h-1.5 bg-black/30 rounded-full overflow-hidden mb-2">
-                    <div 
+                <div className="w-full h-1.5 bg-zinc-200 rounded-full overflow-hidden mb-2">
+                    <div
                         className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 ease-out"
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>
-                <div className="text-sm font-medium text-white/80 tracking-wider">
+                <div className="text-sm font-bold text-indigo-600 tracking-wider">
                     {Math.round(progress)}%
                 </div>
             </div>
@@ -53,9 +53,9 @@ function LoadingFallback() {
 }
 
 const Model = () => {
-    const {activeModel} = useNavigationContext()
+    const { activeModel } = useNavigationContext()
     const [isLoading, setIsLoading] = useState(true);
-    
+
     // Reset loading state when activeModel changes
     useEffect(() => {
         if (activeModel) {
@@ -65,11 +65,11 @@ const Model = () => {
             return () => clearTimeout(timer);
         }
     }, [activeModel]);
-    
+
     return (
         <div>
             <CommentProvider>
-                <Canvas style={{backgroundColor: "#1f2937"}}>
+                <Canvas>
                     {isLoading ? <DirectionalLightWithoutHelper /> : <DirectionalLightWithHelper />}
                     {activeModel && (
                         <Suspense fallback={<LoadingFallback />}>
