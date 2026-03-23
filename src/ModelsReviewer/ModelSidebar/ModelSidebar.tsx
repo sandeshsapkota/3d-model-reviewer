@@ -1,5 +1,5 @@
 import CommentItem from "./CommentItem.tsx";
-import {Comment} from "@/@types";
+import { Comment } from "@/@types";
 import useCommentContext from "@/ModelsReviewer/context/useCommentContext.tsx";
 
 const CommentSidebar = () => {
@@ -12,9 +12,9 @@ const CommentSidebar = () => {
 
     return (
         <div className="flex-1 flex flex-col h-full border-l border-zinc-200/60 bg-white/80 backdrop-blur-md relative shadow-[-10px_0_30px_-10px_rgba(0,0,0,0.05)] z-10">
-            <div className="p-6 border-b border-zinc-100 bg-white/90">
+            <div className="p-5 border-b border-zinc-100 bg-white/90">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-zinc-800 to-zinc-500 tracking-tight">Comments</h2>
+                    <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-zinc-800 to-zinc-500 tracking-tight">Comments</h2>
                 </div>
             </div>
 
@@ -22,7 +22,7 @@ const CommentSidebar = () => {
                 {savedComments?.length > 0 ? (
                     <ul className="space-y-4">
                         {savedComments.map((comment: Comment) => (
-                            <CommentItem key={comment.id} comment={comment}/>
+                            <CommentItem key={comment.id} comment={comment} />
                         ))}
                     </ul>
                 ) : (
@@ -44,10 +44,14 @@ const CommentSidebar = () => {
                             </svg>
                         </div>
                         <p className="text-lg font-medium text-zinc-500 mb-1">No comments yet</p>
-                        <p className="text-sm text-zinc-400 mb-4 max-w-[200px]">Click the add comment button to tag the 3D model.</p>
+                        <p className="text-sm text-zinc-500 mb-5 max-w-[240px] leading-relaxed">
+                            {isCommentActive 
+                                ? "Click anywhere on the 3D model to place a pin and start a discussion." 
+                                : "Enable comment mode to place pins and share feedback on the 3D model."}
+                        </p>
                         {!isCommentActive && (
                             <button onClick={handleToggleCommentMode}
-                                    className="px-5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-full hover:bg-zinc-800 transition-all shadow-md hover:shadow-lg focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 active:scale-95">
+                                className="px-5 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-full hover:bg-zinc-800 transition-all shadow-md hover:shadow-lg focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 active:scale-95">
                                 Enable Comment Mode
                             </button>
                         )}
