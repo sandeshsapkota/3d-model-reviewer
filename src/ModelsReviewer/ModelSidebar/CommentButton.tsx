@@ -8,8 +8,8 @@ const CommentButton = () => {
 
     return (
         <button
-            className={`fixed bottom-4 left-4  z-10 flex items-center justify-center p-2 rounded-full transition-colors ${
-                isCommentActive ? "bg-blue-100 text-blue-600" : "bg-gray-100 hover:bg-gray-200"
+            className={`fixed bottom-6 left-6 z-50 flex items-center justify-center p-3.5 rounded-full transition-all duration-300 shadow-lg ${
+                isCommentActive ? "bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-105 ring-4 ring-indigo-500/20" : "bg-white text-zinc-600 hover:bg-zinc-50 hover:text-indigo-600 border border-zinc-200 hover:scale-105"
             }`}
             onClick={handleToggleCommentMode}
             aria-label="Toggle comment mode"

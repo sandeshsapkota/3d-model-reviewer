@@ -1,5 +1,5 @@
 import { Comment, Vertex } from "@/@types";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { OrbitControls, useGLTF, Html } from "@react-three/drei";
 import { ThreeEvent, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -89,7 +89,7 @@ function ModelRenderer({url}: {
             {
                 savedComments.map((comment: Comment) => {
                     return (
-                        <mesh
+                        <group
                             key={comment.id}
                             position={[
                                 comment.vertices.x as number,
@@ -97,14 +97,13 @@ function ModelRenderer({url}: {
                                 comment.vertices.z as number + 0.01
                             ]}
                         >
-                            <circleGeometry args={[40 / 1000, 32]}/>
-                            <meshBasicMaterial
-                                color={comment?.isActive ? "blue" : "orangered"}
-                                depthTest={false}
-                                transparent={true}
-                                opacity={1}
-                            />
-                        </mesh>
+                            <Html center zIndexRange={[100, 0]}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${comment?.isActive ? 'bg-indigo-600 scale-125 ring-4 ring-indigo-500/30' : 'bg-white/90 backdrop-blur-md border-2 border-indigo-500 hover:scale-110 group cursor-pointer'}`}
+                                     style={{ pointerEvents: 'none' }}>
+                                    <div className={`w-2.5 h-2.5 rounded-full ${comment?.isActive ? 'bg-white' : 'bg-indigo-500 group-hover:bg-indigo-600 transition-colors'}`} />
+                                </div>
+                            </Html>
+                        </group>
                     );
                 })
             }
