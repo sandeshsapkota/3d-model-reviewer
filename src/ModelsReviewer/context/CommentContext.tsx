@@ -63,7 +63,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
                 utilsRef,
             }}>
                 {/* Main 3D Area */}
-                <div className="flex-1 relative h-full overflow-hidden z-20 bg-gradient-to-b from-zinc-100 via-zinc-200/60 to-zinc-300/80 transition-all duration-500">
+                <div className="flex-1 relative h-full overflow-hidden z-20 bg-gradient-to-b from-zinc-300 via-zinc-400/60 to-zinc-500/80 transition-all duration-500">
                     {/* Floating Instruction Banner */}
                     {isCommentActive && savedComments.length === 0 && (
                         <div className="absolute top-8 left-1/2 -translate-x-1/2 px-5 py-3 bg-white/95 backdrop-blur-md text-zinc-700 border border-zinc-200/50 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex items-center gap-3 z-50 animate-in fade-in slide-in-from-top-4 duration-500">
