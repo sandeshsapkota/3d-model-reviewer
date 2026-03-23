@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext } from "react";
-import {useLocalStorage} from "react-haiku";
+import { useLocalStorage } from "react-haiku";
 type FullScreenContextType = {
     isFullScreen: boolean;
     toggleFullScreen: () => void;
@@ -8,7 +8,7 @@ type FullScreenContextType = {
 export const FullScreenContext = createContext<FullScreenContextType | null>(null);
 
 export const FullScreenProvider = ({ children }: { children: ReactNode }) => {
-    const [isFullScreen, setIsFullScreen] = useLocalStorage('fullScreen', false);
+    const [isFullScreen, setIsFullScreen] = useLocalStorage('fullScreen', true);
 
 
     const toggleFullScreen = () => {

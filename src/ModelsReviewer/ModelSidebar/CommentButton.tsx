@@ -4,7 +4,6 @@ const CommentButton = () => {
     const {
         isCommentActive,
         handleToggleCommentMode,
-        savedComments
     } = useCommentContext();
 
     return (
@@ -33,11 +32,6 @@ const CommentButton = () => {
                 </svg>
             </button>
 
-            {savedComments?.length === 0 && !isCommentActive && (
-                <div className="absolute top-1/2 -translate-y-1/2 left-full ml-4 w-[200px] text-center bg-zinc-900 text-white text-[14px] leading-[1.4] font-normal px-4 py-3 rounded-xl shadow-xl animate-in fade-in slide-in-from-left-4 duration-500 zoom-in-95 pointer-events-none before:content-[''] before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-1.5 before:w-0 before:h-0 before:border-y-[6px] before:border-y-transparent before:border-r-[8px] before:border-r-zinc-900">
-                    Enable comment mode to comment on the 3D model
-                </div>
-            )}
         </div>
     );
 };
