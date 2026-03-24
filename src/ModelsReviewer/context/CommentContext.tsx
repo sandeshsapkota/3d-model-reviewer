@@ -24,15 +24,13 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
     const utilsRef = useRef<UtilsRefType>({});
     const [comment, setComment] = useState<string>("");
     const [isCommentActive, setIsCommentActive] = useState(false);
-    const [savedComments, setSavedComments] = useState<Comment[]>([]);
     const [activeVertices, setActiveVertices] = useState<Vertex>({ x: null, y: null, z: null });
     const { isFullScreen } = useFullScreen();
     const { activeModel } = useNavigationContext();
 
-    // Per-model comment store: { [modelUrl]: Comment[] }
-    // Initialized from localStorage or defaults
-    const perModelComments = useRef<Record<string, Comment[]>>((() => {
-        if (typeof window === 'undefined') return {};
+    // Unified store for all models: { [modelUrl]: Comment[] }
+    const [commentStore, setCommentStore] = useState<Record<string, Comment[]>>(() => {
+        if (typeof window === 'undefined') return MOCK_COMMENTS;
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
             try {
@@ -43,37 +41,43 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
             }
         }
         return MOCK_COMMENTS;
-    })());
+    });
 
-    // Track the previous model so we can persist its comments before switching
-    const prevModelRef = useRef<string | null>(null);
+    // Derived current model comments
+    const savedComments = activeModel ? (commentStore[activeModel] ?? []) : [];
 
-    // Toast state: appears 1s after each model navigation, adapts to comment count
+    const setSavedComments = (comments: Comment[] | ((prev: Comment[]) => Comment[])) => {
+        if (activeModel) {
+            setCommentStore(prev => {
+                const prevComments = prev[activeModel] ?? [];
+                const nextComments = typeof comments === 'function' ? comments(prevComments) : comments;
+                return {
+                    ...prev,
+                    [activeModel]: nextComments
+                };
+            });
+        }
+    };
+
+    // Auto-save to localStorage whenever the store changes
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(commentStore));
+    }, [commentStore]);
+
+    // Toast state and navigation resets
     const [showToast, setShowToast] = useState(false);
     const [toastDismissed, setToastDismissed] = useState(false);
     const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Save current model's comments, then restore the new model's comments
     useEffect(() => {
-        // 1. Persist comments for the model we're leaving
-        if (prevModelRef.current) {
-            perModelComments.current[prevModelRef.current] = savedComments;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(perModelComments.current));
-        }
-        prevModelRef.current = activeModel;
-
-        // 2. Restore comments for the model we're entering (or start fresh)
-        const restored = activeModel ? (perModelComments.current[activeModel] ?? []) : [];
-        setSavedComments(restored);
-
-        // 3. Reset transient UI state
+        // Reset transient UI state on model navigation
         setComment("");
         setActiveVertices({ x: null, y: null, z: null });
         setIsCommentActive(false);
         setToastDismissed(false);
         setShowToast(false);
 
-        // 4. Re-arm toast for the freshly loaded model
+        // Re-arm toast for the freshly loaded model
         if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
         toastTimerRef.current = setTimeout(() => {
             setShowToast(true);
@@ -82,16 +86,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
         return () => {
             if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeModel]);
-
-    // Persist to localStorage whenever savedComments changes
-    useEffect(() => {
-        if (activeModel) {
-            perModelComments.current[activeModel] = savedComments;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(perModelComments.current));
-        }
-    }, [savedComments, activeModel]);
 
     const handleToggleCommentMode = () => {
         setIsCommentActive(!isCommentActive);
@@ -99,7 +94,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
 
     const handleSaveComment = (comment: string) => {
         if (comment.trim() && activeVertices.x !== null) {
-            setSavedComments([...savedComments.map(item => ({ ...item, isActive: false })), {
+            setSavedComments(prev => [...prev.map(item => ({ ...item, isActive: false })), {
                 comment,
                 isActive: true,
                 id: Date.now(),
@@ -116,7 +111,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
         });
         const item = updatedComments.find(item => item.id === id);
         setSavedComments(updatedComments);
-        setActiveVertices({ x: null, y: null, z: null }); // Close any draft comment
+        setActiveVertices({ x: null, y: null, z: null });
 
         if (item?.vertices) {
             utilsRef?.current?.handleRotateCamera?.(item.vertices);
