@@ -161,7 +161,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
                     {/* Hint Toast — bottom-right, delayed, dismissable */}
                     {showToast && !toastDismissed && !isCommentActive && (
                         <div
-                            className="absolute bottom-[24px] right-[24px] z-50 flex items-start gap-3 px-5 py-4 rounded-2xl
+                            className="hidden lg:flex absolute bottom-[24px] right-[24px] z-50 items-start gap-3 px-5 py-4 rounded-2xl
                                        bg-indigo-600/90 backdrop-blur-xl text-white
                                        shadow-[0_20px_60px_-10px_rgba(99,102,241,0.6)]
                                        border border-indigo-400/30
@@ -190,7 +190,8 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
                                             {savedComments.length} comment{savedComments.length > 1 ? 's' : ''} on this model
                                         </p>
                                         <p className="text-indigo-200 text-[12px] mt-0.5 leading-relaxed">
-                                            Click a comment in the sidebar to jump to its position.
+                                            <span className="hidden lg:inline">Click a comment in the sidebar to jump to its position.</span>
+                                            <span className="lg:hidden inline">Tap a comment pin on the model to view its details.</span>
                                         </p>
                                     </>
                                 )}
@@ -231,7 +232,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
                 </div>
 
                 {/* Sliding right sidebar wrapper */}
-                <div className={`relative h-full transition-[min-width,width] duration-500 ease-in-out z-30 ${isFullScreen ? 'min-w-0 w-0' : 'min-w-[400px] w-[400px]'}`}>
+                <div className={`hidden lg:block relative h-full transition-[min-width,width] duration-500 ease-in-out z-30 ${isFullScreen ? 'min-w-0 w-0' : 'min-w-[400px] w-[400px]'}`}>
 
                     {/* The Toggle Button hangs perfectly on the left edge of this sliding wrapper */}
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 z-50">

@@ -132,7 +132,7 @@ function ModelRenderer({url}: {
                                     
                                     {/* Expanded popover for viewing the comment */}
                                     {savedComment?.isActive && (
-                                        <div className="absolute top-1/2 left-full ml-4 -translate-y-1/2 w-64 p-4 bg-white/95 backdrop-blur-xl border border-zinc-200/80 rounded-lg shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] pointer-events-auto z-50 animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 lg:bottom-auto lg:top-1/2 lg:left-full lg:ml-4 lg:translate-x-0 lg:-translate-y-1/2 w-[240px] lg:w-64 p-4 bg-white/95 backdrop-blur-xl border border-zinc-200/80 rounded-lg shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] pointer-events-auto z-50 animate-in fade-in zoom-in-95 duration-200">
                                             <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-zinc-100">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">JD</div>
@@ -143,10 +143,10 @@ function ModelRenderer({url}: {
                                                         e.stopPropagation();
                                                         handleDeleteComment(savedComment.id);
                                                     }}
-                                                    className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors cursor-pointer"
+                                                    className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                                                     title="Delete comment"
                                                 >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                                         <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6" />
                                                     </svg>
                                                 </button>
@@ -177,7 +177,7 @@ function ModelRenderer({url}: {
                             </div>
                             
                             {/* Input Popover */}
-                            <div className="absolute top-1/2 left-full ml-4 -translate-y-1/2 w-72 p-1 bg-white/95 backdrop-blur-xl border border-zinc-200/80 rounded-lg shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] pointer-events-auto z-50 animate-in zoom-in-95 duration-200">
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 lg:bottom-auto lg:top-1/2 lg:left-full lg:ml-4 lg:translate-x-0 lg:-translate-y-1/2 w-[240px] lg:w-72 p-1 bg-white/95 backdrop-blur-xl border border-zinc-200/80 rounded-lg shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] pointer-events-auto z-50 animate-in zoom-in-95 duration-200">
                                 <div className="relative flex flex-col">
                                     <textarea
                                         autoFocus
