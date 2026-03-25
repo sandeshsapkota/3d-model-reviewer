@@ -27,7 +27,7 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
     const [activeVertices, setActiveVertices] = useState<Vertex>({ x: null, y: null, z: null });
     const { isFullScreen } = useFullScreen();
     const { activeModel } = useNavigationContext();
-
+    console.log('test')
     // Unified store for all models: { [modelUrl]: Comment[] }
     const [commentStore, setCommentStore] = useState<Record<string, Comment[]>>(() => {
         if (typeof window === 'undefined') return MOCK_COMMENTS;
@@ -244,5 +244,4 @@ export const CommentProvider = ({ children }: { children: ReactNode }) => {
         </div>
     );
 };
-
 
