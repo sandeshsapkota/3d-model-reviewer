@@ -7,7 +7,7 @@ import {NavigationProvider} from "@/ModelsReviewer/context/NavigationProvider.ts
 * */
 const ModelsReviewer = () => {
     return (
-        <div>
+        <div className="w-full h-full">
             <NavigationProvider>
                 <FullScreenProvider>
                     <Model/>
